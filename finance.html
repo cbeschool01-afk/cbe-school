@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="theme-color" content="#003B70">
+<title>CBE.School — Financial Management</title>
+<style>
+:root{
+  --bg:#EAF6FF; --paper:#FFFFFF; --ink:#0E2A44; --ink-soft:#5A7791;
+  --line:#C9E4F5; --line-soft:#EAF6FF; --primary:#003B70; --primary-light:#0056A6;
+  --primary-soft:#E3F1FC; --accent:#00A86B; --accent-soft:#DFF7EB; --brightgreen:#39D353;
+  --gold:#FFC107; --gold-soft:#FFF6DA; --good:#00A86B; --danger:#C0392B; --danger-soft:#FBE2DE;
+  --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --radius:10px; --topbar-h:78px;
+}
+[data-theme="dark"]{
+  --bg:#0B1B2B; --paper:#122539; --ink:#EAF3FB; --ink-soft:#93AEC4;
+  --line:#1F3A54; --line-soft:#16293D; --accent-soft:#0F3B2C; --danger-soft:#3A2323;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1B2B; --paper:#122539; --ink:#EAF3FB; --ink-soft:#93AEC4;
+    --line:#1F3A54; --line-soft:#16293D; --accent-soft:#0F3B2C; --danger-soft:#3A2323;
+  }
+}
+*{box-sizing:border-box;} html,body{margin:0;padding:0;overflow-x:hidden;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;margin:0 0 4px;color:var(--primary);}
+h1{font-size:26px;} h2{font-size:19px;} h3{font-size:15px;}
+button{font-family:var(--sans);cursor:pointer;}
+input,select,textarea{font-family:var(--sans);font-size:13.5px;}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;}
+
+#shell{display:flex;flex-direction:column;min-height:100vh;}
+#shell-body{display:flex;flex:1;min-height:0;}
+
+#topbar{
+  display:flex;align-items:center;gap:16px;padding:14px 26px;min-height:var(--topbar-h);
+  background:linear-gradient(100deg,var(--primary) 0%,#00335F 45%,#00603F 88%,#00A86B 100%);
+  color:#fff;position:sticky;top:0;z-index:40;box-shadow:0 2px 14px rgba(0,20,45,.22);
+}
+#topbar .mark{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:.5px;line-height:1.1;}
+#topbar .tagline{font-size:11.5px;color:#D6F3E6;margin-top:2px;}
+#topbar .school{font-size:11px;color:#BFE3FF;margin-top:3px;}
+#topbar .brand-text{flex:1;min-width:0;}
+#sb-toggle{
+  display:none;width:38px;height:38px;border-radius:9px;border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.12);align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:0;
+}
+#sb-toggle span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
+
+#sidebar{
+  width:220px;flex:0 0 220px;color:#F2FAFF;
+  background:linear-gradient(190deg,var(--primary) 0%,#00294F 55%,#012B22 100%);
+  padding:14px 0 0;display:flex;flex-direction:column;position:sticky;top:var(--topbar-h);
+  height:calc(100vh - var(--topbar-h));box-shadow:2px 0 18px rgba(0,20,45,.18);
+}
+#sidebar::before{content:'';position:absolute;top:0;right:0;width:4px;height:100%;background:linear-gradient(180deg,var(--brightgreen),var(--accent) 45%,var(--gold) 100%);opacity:.9;}
+nav.navlist{flex:1;overflow-y:auto;padding:8px 12px;}
+.navsec{font-size:10px;color:#7FB6D8;letter-spacing:.8px;padding:14px 6px 6px;}
+.navitem{
+  display:flex;align-items:center;gap:11px;padding:11px 14px;color:#DCEEFA;text-decoration:none;
+  font-size:13.5px;cursor:pointer;border-radius:10px;margin-bottom:3px;
+  border-bottom:1px solid rgba(255,255,255,.06);transition:background .15s;
+}
+.navitem:hover{background:rgba(255,255,255,.08);}
+.navitem.active{
+  background:linear-gradient(90deg,#00A86B,#39D353 130%);
+  box-shadow:inset 3px 0 0 var(--gold),0 4px 12px rgba(0,168,107,.35);
+  color:#fff;font-weight:700;
+}
+.navitem .ico{width:17px;height:17px;flex:0 0 auto;opacity:.85;}
+.navitem .ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.user-card{margin:8px 12px 0;padding:14px;border-top:1px solid rgba(255,255,255,.14);}
+.user-card .uname{font-weight:700;color:#fff;font-size:14px;}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;background:var(--gold);color:#5C3E00;margin-top:4px;}
+.u-logout{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;
+  background:rgba(0,20,45,.5);border:1px solid rgba(255,255,255,.18);color:#fff;font-weight:700;
+  font-size:13px;padding:10px 12px;border-radius:12px;cursor:pointer;
+}
+.u-logout:hover{background:rgba(0,20,45,.78);}
+.back-link{
+  display:block;margin:10px 12px;padding:10px 12px;border-radius:10px;text-align:center;
+  background:rgba(255,255,255,.1);color:#DCEEFA;font-size:12.5px;font-weight:600;text-decoration:none;
+}
+.back-link:hover{background:rgba(255,255,255,.18);}
+
+#main{flex:1;min-width:0;padding:26px 34px 60px;max-width:1180px;}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;gap:16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--primary) 0%,var(--accent) 55%,var(--brightgreen) 100%) 1;}
+.pagehead .sub{color:var(--ink-soft);font-size:12.5px;margin-top:2px;}
+.actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+.btn{
+  border:1px solid var(--primary-light);background:var(--paper);color:var(--primary-light);padding:8px 14px;
+  border-radius:var(--radius);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+  transition:background .16s,border-color .16s,transform .1s,box-shadow .16s;
+}
+.btn:hover{border-color:var(--primary);background:var(--primary-soft);transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,59,112,.12);}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn.primary:hover{background:#00925C;border-color:#00925C;}
+.btn.accent{background:var(--primary-light);border-color:var(--primary-light);color:#fff;}
+.btn.danger{color:var(--danger);border-color:var(--danger-soft);}
+.btn.sm{padding:5px 10px;font-size:12px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,59,112,.06);}
+.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line-soft);}
+.grid{display:grid;gap:14px;}
+.grid.cols-2{grid-template-columns:1fr 1fr;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}}
+
+label{display:block;font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;font-weight:600;}
+.field{margin-bottom:12px;}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--paper);color:var(--ink);
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent);}
+
+table.data{font-size:13px;}
+table.data th{text-align:left;font-size:10.5px;letter-spacing:.3px;color:var(--ink-soft);font-weight:700;padding:7px 10px;border-bottom:2px solid var(--primary);}
+table.data td{padding:8px 10px;border-bottom:1px solid var(--line-soft);}
+table.data tbody tr:hover{background:var(--line-soft);}
+table.data tfoot td{border-top:2px solid var(--primary);font-weight:700;}
+.num{text-align:right;font-variant-numeric:tabular-nums;}
+.center{text-align:center;}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px;}
+.badge.good{background:var(--accent-soft);color:#046A38;}
+.badge.mid{background:var(--gold-soft);color:#5C3E00;}
+.badge.low{background:var(--danger-soft);color:var(--danger);}
+.badge.pending{background:var(--primary-soft);color:var(--primary);}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+@media(max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 2px 12px rgba(0,59,112,.06);}
+.stat .n{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--primary);}
+.stat .l{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+.stat.accent .n{color:var(--accent);}
+.stat.warn .n{color:#B78103;}
+.stat.danger .n{color:var(--danger);}
+
+.empty{padding:40px 20px;text-align:center;color:var(--ink-soft);border:1px dashed var(--line);border-radius:10px;}
+.searchbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.searchbar input{flex:1;min-width:160px;}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;}
+.filters .field{margin-bottom:0;min-width:120px;}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap;}
+.tab{padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:var(--primary);border-bottom-color:var(--accent);}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,20,40,.5);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50;}
+.modal{background:var(--paper);border-radius:12px;width:100%;max-width:520px;padding:22px 24px;box-shadow:0 20px 50px rgba(0,20,45,.3);}
+.modal.wide{max-width:760px;}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.modal-head .x{cursor:pointer;font-size:18px;color:var(--ink-soft);border:none;background:none;}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft);}
+
+.toast{position:fixed;bottom:22px;right:22px;max-width:380px;background:var(--primary);color:#fff;padding:12px 16px;border-radius:10px;font-size:13px;z-index:99;box-shadow:0 8px 24px rgba(0,20,45,.3);display:flex;gap:10px;border-left:5px solid var(--accent);cursor:pointer;}
+.toast.success{border-left-color:var(--brightgreen);}
+.toast.error{background:#8E2F2F;border-left-color:#FFB4B4;}
+.toast.warn{border-left-color:var(--gold);}
+
+#login-gate{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,var(--bg) 0%,#DCEFFB 100%);display:flex;align-items:center;justify-content:center;padding:24px 16px;}
+#login-gate.hidden{display:none;}
+.login-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:36px 40px 28px;width:100%;max-width:400px;box-shadow:0 16px 44px rgba(0,59,112,.16);border-top:5px solid var(--accent);}
+.login-card .brand{text-align:center;margin-bottom:26px;}
+.login-card .brand .mark{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--primary);}
+.login-card .brand .tagline{font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+.login-error{background:var(--danger-soft);color:var(--danger);border-left:4px solid var(--danger);padding:10px 12px;border-radius:4px;font-size:13px;margin-bottom:14px;display:none;}
+.login-error.show{display:block;}
+#shell.locked{display:none;}
+
+.small{font-size:12px;color:var(--ink-soft);}
+.mono{font-variant-numeric:tabular-nums;}
+.right{text-align:right;}
+.hint{font-size:11px;color:var(--ink-soft);margin-top:3px;}
+.warn-box{background:var(--danger-soft);color:var(--danger);padding:10px 12px;border-radius:8px;font-size:12.5px;margin-bottom:12px;}
+.ok-box{background:var(--accent-soft);color:#046A38;padding:10px 12px;border-radius:8px;font-size:12.5px;margin-bottom:12px;}
+.banner-warn{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--gold-soft);border:1px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;}
+
+@media(max-width:860px){
+  :root{--topbar-h:64px;}
+  #sb-toggle{display:flex;}
+  #sidebar{width:240px;position:fixed;left:0;top:var(--topbar-h);z-index:60;height:calc(100vh - var(--topbar-h));transform:translateX(-100%);transition:transform .22s;}
+  #sidebar.open{transform:translateX(0);}
+  #sidebar-backdrop{display:none;position:fixed;left:0;right:0;top:var(--topbar-h);bottom:0;z-index:59;background:rgba(3,15,12,.5);}
+  #sidebar-backdrop.show{display:block;}
+  #main{padding:18px 16px 40px;max-width:100%;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  :root{--topbar-h:56px;}
+  #topbar{padding:10px 12px;}
+  #topbar .mark{font-size:16px;}
+  #main{padding:14px 10px 32px;}
+  .stat-row{grid-template-columns:1fr;}
+  .pagehead{flex-direction:column;align-items:flex-start;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+<div id="login-gate" class="no-print">
+  <div class="login-card" id="login-card-main">
+    <div class="brand">
+      <div class="mark">CBE.School</div>
+      <div class="tagline">Financial Management</div>
+    </div>
+    <div class="login-error" id="login-error" role="alert"></div>
+    <p class="small" style="text-align:center;margin-bottom:14px;">Use the same email and password you use for CBE.School Analytics.</p>
+    <form id="login-form" autocomplete="on">
+      <div class="field">
+        <label for="login-user">Email address</label>
+        <input type="email" id="login-user" name="username" required autocomplete="email" placeholder="Enter your email" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="login-pass">Password</label>
+        <input type="password" id="login-pass" name="password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn primary" id="login-btn" style="width:100%;justify-content:center;padding:11px;font-size:14px;">Sign in</button>
+    </form>
+    <p class="small" style="text-align:center;margin-top:16px;">
+      <a href="index.html" id="link-analytics" style="color:var(--primary-light);font-weight:600;">← Back to Analytics</a>
+    </p>
+  </div>
+</div>
+
+<div id="shell" class="locked">
+  <div id="topbar" class="no-print">
+    <button id="sb-toggle" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <div class="brand-text">
+      <div class="mark">CBE.School Finance</div>
+      <div class="tagline">School Fees · Remedial Fees</div>
+      <div class="school" id="sb-school">—</div>
+    </div>
+  </div>
+  <div id="shell-body">
+    <aside id="sidebar" class="no-print">
+      <nav class="navlist" id="navlist"></nav>
+      <a class="back-link" href="../index.html" id="back-analytics">← Analytics</a>
+      <div class="user-card" id="user-chip"></div>
+    </aside>
+    <div id="sidebar-backdrop"></div>
+    <main id="main"></main>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+/* ============================================================
+   CBE.School Finance Module
+   Separate HTML – shares Supabase, Clerk, schools, learners,
+   classes and permissions with the Analytics system.
+   ============================================================ */
+
+const SUPABASE_URL = 'https://enlgjmtmytwcafugldxp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_PsrcRetHOg9cgxVNG-Ztgw_CAlYCzaV';
+/* Where Analytics lives relative to this file. finance/index.html -> '../index.html'; same folder -> './index.html' */
+const ANALYTICS_URL = './index.html';
+
+let dbHandle = null;
+let CURRENT_USER = null;          // { id, email, name }
+let IS_PLATFORM_ADMIN = false;
+let PLATFORM_ROLE = null;
+let MY_SCHOOL_ROLE = {};          // schoolId -> role
+let MY_CLASS_ROLE = {};           // classId -> role
+let DATA = { schools: [], classes: [], students: [], streams: [] };
+let DATA_LOADED = false;
+let STATE = { page: 'dashboard', params: {} };
+let ACCESS = {};                   // schoolId -> finance_school_access row (owner-controlled)
+let FILTERS = { schoolId: '', classId: '', year: '', term: '', feeType: '' };
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid = (p='id') => p + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+const money = n => Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const today = () => new Date().toISOString().slice(0,10);
+
+function toast(msg, type='info'){
+  const root = $('toast-root');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type==='error'?'error':type==='success'?'success':type==='warn'?'warn':'');
+  el.innerHTML = `<span>${esc(msg)}</span>`;
+  el.onclick = () => el.remove();
+  root.appendChild(el);
+  setTimeout(() => el.remove(), 4500);
+}
+
+function openModal(html, wide){
+  const root = $('modal-root');
+  root.innerHTML = `<div class="modal-bg" id="modal-bg"><div class="modal ${wide?'wide':''}">${html}</div></div>`;
+  root.querySelectorAll('[data-close]').forEach(b => b.onclick = closeModal);
+  $('modal-bg').onclick = e => { if(e.target.id==='modal-bg') closeModal(); };
+}
+function closeModal(){ $('modal-root').innerHTML = ''; }
+
+/* ---------- Supabase + Clerk ---------- */
+function openDB(){
+  return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    accessToken: async () => {
+      try { return (window.Clerk && window.Clerk.session) ? await window.Clerk.session.getToken() : null; }
+      catch(e){ return null; }
+    }
+  });
+}
+async function sbOk(q){ const r = await q; if(r.error) throw r.error; return r.data; }
+
+async function loadMemberships(userId){
+  const [sm, cm, pa, pr] = await Promise.all([
+    sbOk(dbHandle.from('app_school_members').select('school_id,role').eq('user_id', userId)),
+    sbOk(dbHandle.from('app_class_members').select('class_id,role').eq('user_id', userId)),
+    sbOk(dbHandle.from('platform_admins').select('user_id').eq('user_id', userId).maybeSingle()),
+    sbOk(dbHandle.from('platform_roles').select('role,permissions,active').eq('user_id', userId).maybeSingle()).catch(()=>null)
+  ]);
+  MY_SCHOOL_ROLE = {}; (sm||[]).forEach(m => MY_SCHOOL_ROLE[m.school_id] = m.role);
+  MY_CLASS_ROLE = {}; (cm||[]).forEach(m => MY_CLASS_ROLE[m.class_id] = m.role);
+  IS_PLATFORM_ADMIN = !!pa;
+  PLATFORM_ROLE = pr;
+}
+
+async function loadSchoolsAndLearners(){
+  /* Reuse the exact same tables the Analytics app uses.
+     We only need school metadata + class/learner lists. */
+  const [schools, classes] = await Promise.all([
+    sbOk(dbHandle.from('app_schools').select('id,value')),
+    sbOk(dbHandle.from('app_classes').select('id,school_id,value'))
+  ]);
+  DATA.schools = [];
+  DATA.classes = [];
+  DATA.students = [];
+  DATA.streams = [];
+  (schools||[]).forEach(r => {
+    const v = r.value || {};
+    if(v.school) DATA.schools.push(Object.assign({id:r.id}, v.school));
+  });
+  (classes||[]).forEach(r => {
+    const v = r.value || {};
+    if(!v.class) return;
+    const cls = Object.assign({id:r.id, schoolId:r.school_id}, v.class);
+    DATA.classes.push(cls);
+    (v.students||[]).forEach(s => {
+      if(s && !s.schoolId) s.schoolId = r.school_id;
+      if(s) DATA.students.push(s);
+    });
+    (v.streams||[]).forEach(st => {
+      if(st && !st.schoolId) st.schoolId = r.school_id;
+      if(st) DATA.streams.push(st);
+    });
+  });
+  DATA.classes.sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')));
+}
+
+/* ---------- Permission helpers (mirror Analytics) ---------- */
+function platformRole(){
+  if(PLATFORM_ROLE) return PLATFORM_ROLE.active ? PLATFORM_ROLE.role : null;
+  return IS_PLATFORM_ADMIN ? 'owner' : null;
+}
+function isPlatformAdmin(){ return !!platformRole(); }
+function isOwner(){ return ['owner','platform_owner'].includes(String(platformRole()||'').trim().toLowerCase().replace(/\s+/g,'_')); }
+function financeEnabled(sid){ return !!(ACCESS[sid] && ACCESS[sid].enabled); }
+function schoolRole(sid){ return MY_SCHOOL_ROLE[sid] || null; }
+function isSchoolAdminFor(sid){
+  if(isPlatformAdmin()) return true;
+  const r = schoolRole(sid);
+  return r === 'owner' || r === 'school_admin';
+}
+function isClassTeacherFor(cid){
+  if(isPlatformAdmin()) return true;
+  return MY_CLASS_ROLE[cid] === 'class_teacher' || MY_CLASS_ROLE[cid] === 'subject_teacher' || !!MY_CLASS_ROLE[cid];
+}
+function canAccessSchoolFees(sid){
+  return financeEnabled(sid) && isSchoolAdminFor(sid);
+}
+function canAccessRemedial(sid, cid){
+  if(!financeEnabled(sid)) return false;
+  if(isSchoolAdminFor(sid)) return true;
+  if(cid) return isClassTeacherFor(cid);
+  /* any class membership in that school */
+  return DATA.classes.some(c => c.schoolId === sid && isClassTeacherFor(c.id));
+}
+function accessibleSchools(){
+  /* Only schools the Platform Owner has switched Finance on for. */
+  const base = isPlatformAdmin() ? DATA.schools.slice()
+    : DATA.schools.filter(s => schoolRole(s.id) || DATA.classes.some(c => c.schoolId===s.id && MY_CLASS_ROLE[c.id]));
+  return base.filter(s => financeEnabled(s.id));
+}
+function accessibleClasses(schoolId){
+  let list = DATA.classes;
+  if(schoolId) list = list.filter(c => c.schoolId === schoolId);
+  if(isPlatformAdmin()) return list;
+  return list.filter(c => {
+    if(isSchoolAdminFor(c.schoolId)) return true;
+    return isClassTeacherFor(c.id);
+  });
+}
+function accessibleStudents(schoolId, classId){
+  let list = DATA.students.filter(s => !s.graduated);
+  if(schoolId) list = list.filter(s => s.schoolId === schoolId);
+  if(classId) list = list.filter(s => s.classId === classId);
+  if(isPlatformAdmin()) return list;
+  return list.filter(s => {
+    if(isSchoolAdminFor(s.schoolId)) return true;
+    return isClassTeacherFor(s.classId);
+  });
+}
+function schoolById(id){ return DATA.schools.find(s => s.id === id); }
+function classById(id){ return DATA.classes.find(c => c.id === id); }
+function studentById(id){ return DATA.students.find(s => s.id === id); }
+function streamById(id){ return DATA.streams.find(s => s.id === id); }
+
+/* ---------- Finance data access ---------- */
+/* Supabase caps every request at 1,000 rows. Page through the results so
+   dashboard totals and reports are never silently truncated. */
+async function fetchPaged(build){
+  const size = 1000; let from = 0; const out = [];
+  for(;;){
+    const rows = await sbOk(build().range(from, from + size - 1));
+    out.push(...(rows || []));
+    if(!rows || rows.length < size) break;
+    from += size;
+    if(from > 500000) break;           // safety stop
+  }
+  return out;
+}
+function fetchCharges(opts={}){
+  return fetchPaged(() => {
+    let q = dbHandle.from('finance_charges').select('*');
+    if(opts.schoolId) q = q.eq('school_id', opts.schoolId);
+    if(opts.learnerId) q = q.eq('learner_id', opts.learnerId);
+    if(opts.classId) q = q.eq('class_id', opts.classId);
+    if(opts.year) q = q.eq('academic_year', opts.year);
+    if(opts.term) q = q.eq('term', opts.term);
+    if(opts.feeType) q = q.eq('fee_type', opts.feeType);
+    return q.order('id');
+  });
+}
+function fetchPayments(opts={}){
+  return fetchPaged(() => {
+    let q = dbHandle.from('finance_payments').select('*').eq('status','confirmed');
+    if(opts.schoolId) q = q.eq('school_id', opts.schoolId);
+    if(opts.learnerId) q = q.eq('learner_id', opts.learnerId);
+    if(opts.classId) q = q.eq('class_id', opts.classId);
+    if(opts.year) q = q.eq('academic_year', opts.year);
+    if(opts.term) q = q.eq('term', opts.term);
+    if(opts.feeType) q = q.eq('fee_type', opts.feeType);
+    return q.order('id');
+  });
+}
+function fetchSubmissions(opts={}){
+  return fetchPaged(() => {
+    let q = dbHandle.from('finance_remedial_submissions').select('*');
+    if(opts.schoolId) q = q.eq('school_id', opts.schoolId);
+    if(opts.learnerId) q = q.eq('learner_id', opts.learnerId);   /* was ignored before */
+    if(opts.classId) q = q.eq('class_id', opts.classId);
+    if(opts.status) q = q.eq('status', opts.status);
+    if(opts.year) q = q.eq('academic_year', opts.year);
+    if(opts.term) q = q.eq('term', opts.term);
+    return q.order('submitted_at', {ascending:false}).order('id');
+  });
+}
+function fetchStructures(opts={}){
+  return fetchPaged(() => {
+    let q = dbHandle.from('finance_fee_structures').select('*');
+    if(opts.schoolId) q = q.eq('school_id', opts.schoolId);
+    if(opts.year) q = q.eq('academic_year', opts.year);
+    if(opts.term) q = q.eq('term', opts.term);
+    if(opts.feeType) q = q.eq('fee_type', opts.feeType);
+    return q.order('id');
+  });
+}
+function fetchAdjustments(opts={}){
+  return fetchPaged(() => {
+    let q = dbHandle.from('finance_adjustments').select('*');
+    if(opts.schoolId) q = q.eq('school_id', opts.schoolId);
+    if(opts.learnerId) q = q.eq('learner_id', opts.learnerId);
+    if(opts.year) q = q.eq('academic_year', opts.year);
+    if(opts.term) q = q.eq('term', opts.term);
+    if(opts.feeType) q = q.eq('fee_type', opts.feeType);
+    return q.order('id');
+  });
+}
+
+/**
+ * Balance formula (section 7):
+ * Outstanding = Total Charges + Adjustments − Approved/Confirmed Payments
+ * Pending and rejected remedial submissions do NOT reduce the balance.
+ * Negative outstanding is shown as Credit / Overpayment (never forced to 0).
+ */
+function computeBalances(learners, charges, payments, adjustments){
+  const map = {};
+  learners.forEach(l => {
+    map[l.id] = {
+      learner: l,
+      schoolCharged: 0, schoolPaid: 0, schoolAdj: 0,
+      remedialCharged: 0, remedialPaid: 0, remedialAdj: 0
+    };
+  });
+  charges.forEach(c => {
+    if(!map[c.learner_id]) return;
+    if(c.fee_type === 'school') map[c.learner_id].schoolCharged += Number(c.amount)||0;
+    else map[c.learner_id].remedialCharged += Number(c.amount)||0;
+  });
+  payments.forEach(p => {
+    if(!map[p.learner_id]) return;
+    if(p.fee_type === 'school') map[p.learner_id].schoolPaid += Number(p.amount)||0;
+    else map[p.learner_id].remedialPaid += Number(p.amount)||0;
+  });
+  adjustments.forEach(a => {
+    if(!map[a.learner_id]) return;
+    if(a.fee_type === 'school') map[a.learner_id].schoolAdj += Number(a.amount)||0;
+    else map[a.learner_id].remedialAdj += Number(a.amount)||0;
+  });
+  Object.values(map).forEach(r => {
+    r.schoolOutstanding = r.schoolCharged + r.schoolAdj - r.schoolPaid;
+    r.remedialOutstanding = r.remedialCharged + r.remedialAdj - r.remedialPaid;
+    r.schoolStatus = balanceStatus(r.schoolCharged + r.schoolAdj, r.schoolPaid, r.schoolOutstanding);
+    r.remedialStatus = balanceStatus(r.remedialCharged + r.remedialAdj, r.remedialPaid, r.remedialOutstanding);
+  });
+  return map;
+}
+/** Fully Paid | Partially Paid | Unpaid | Credit (overpayment) */
+function balanceStatus(charged, paid, outstanding){
+  if(charged <= 0 && paid <= 0) return 'Unpaid';
+  if(outstanding < -0.009) return 'Credit';
+  if(Math.abs(outstanding) <= 0.009) return 'Fully Paid';
+  if(paid > 0.009) return 'Partially Paid';
+  return 'Unpaid';
+}
+function statusBadge(status){
+  const map = {
+    'Fully Paid': 'good',
+    'Partially Paid': 'mid',
+    'Unpaid': 'low',
+    'Credit': 'pending',
+    'Pending Approval': 'pending',
+    'Approved': 'good',
+    'Rejected': 'low'
+  };
+  return '<span class="badge '+(map[status]||'mid')+'">'+esc(status)+'</span>';
+}
+function downloadCsv(filename, rows){
+  if(!rows || !rows.length){ toast('Nothing to export','warn'); return; }
+  const headers = Object.keys(rows[0]);
+  const lines = [headers.join(',')].concat(rows.map(r =>
+    headers.map(h => {
+      const v = r[h]==null ? '' : String(r[h]);
+      return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
+    }).join(',')
+  ));
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ---------- Navigation ---------- */
+function navItems(){
+  const items = [
+    {id:'dashboard', label:'Dashboard', icon:'home'},
+  ];
+  const schools = accessibleSchools();
+  const anySchoolFees = schools.some(s => canAccessSchoolFees(s.id));
+  const anyRemedial = schools.some(s => canAccessRemedial(s.id));
+  if(anySchoolFees) items.push({id:'school-fees', label:'School Fees', icon:'fees'});
+  if(anyRemedial) items.push({id:'remedial', label:'Remedial Fees', icon:'remedial'});
+  if(anySchoolFees || anyRemedial) items.push({id:'learner', label:'Learner Records', icon:'learner'});
+  if(anySchoolFees || anyRemedial) items.push({id:'reports', label:'Reports', icon:'report'});
+  if(anySchoolFees) items.push({id:'report-forms', label:'Report Forms', icon:'report'});
+  if(isOwner()) items.push({id:'access', label:'Finance Access', icon:'access'});
+  return items;
+}
+function ico(name){
+  const icons = {
+    home: '<svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>',
+    fees: '<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M8 15h2"/></svg>',
+    remedial: '<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>',
+    learner: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
+    report: '<svg viewBox="0 0 24 24"><path d="M4 19V5a1 1 0 0 1 1-1h10l5 5v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M14 4v5h5"/></svg>'
+  };
+  icons.access = '<svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>';
+  return `<span class="ico">${icons[name]||icons.home}</span>`;
+}
+function renderNav(){
+  const items = navItems();
+  $('navlist').innerHTML = items.map(it =>
+    `<a class="navitem ${STATE.page===it.id?'active':''}" data-page="${it.id}">${ico(it.icon)} ${esc(it.label)}</a>`
+  ).join('');
+  $('navlist').querySelectorAll('[data-page]').forEach(a => {
+    a.onclick = e => { e.preventDefault(); goto(a.dataset.page); closeSidebar(); };
+  });
+}
+function renderUserChip(){
+  const name = CURRENT_USER?.name || CURRENT_USER?.email || 'User';
+  let roleLabel = 'Member';
+  if(isPlatformAdmin()) roleLabel = 'Platform Admin';
+  else if(Object.values(MY_SCHOOL_ROLE).some(r => r==='owner'||r==='school_admin')) roleLabel = 'School Admin';
+  else if(Object.keys(MY_CLASS_ROLE).length) roleLabel = 'Class Teacher';
+  $('user-chip').innerHTML = `
+    <div class="uname">${esc(name)}</div>
+    <span class="role-badge">${esc(roleLabel)}</span>
+    <button class="u-logout" id="btn-logout">Sign out</button>`;
+  $('btn-logout').onclick = signOut;
+}
+function goto(page, params={}){
+  STATE.page = page;
+  STATE.params = params || {};
+  renderNav();
+  render();
+}
+function closeSidebar(){
+  $('sidebar')?.classList.remove('open');
+  $('sidebar-backdrop')?.classList.remove('show');
+}
+
+/* ---------- Filters UI ---------- */
+function yearsAvailable(){
+  const y = new Set();
+  DATA.classes.forEach(c => { if(c.academicYear) y.add(String(c.academicYear)); });
+  const cy = new Date().getFullYear();
+  y.add(String(cy)); y.add(String(cy-1));
+  return [...y].sort().reverse();
+}
+function termsAvailable(){ return ['Term 1','Term 2','Term 3']; }
+
+function filterBar(opts={}){
+  const schools = accessibleSchools();
+  const classes = accessibleClasses(FILTERS.schoolId);
+  const showSchool = schools.length > 1 || isPlatformAdmin();
+  return `<div class="filters">
+    ${showSchool?`<div class="field"><label>School</label>
+      <select id="f-school"><option value="">All schools</option>
+      ${schools.map(s=>`<option value="${esc(s.id)}" ${FILTERS.schoolId===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}
+      </select></div>`:''}
+    <div class="field"><label>Class</label>
+      <select id="f-class"><option value="">All classes</option>
+      ${classes.map(c=>`<option value="${esc(c.id)}" ${FILTERS.classId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+      </select></div>
+    <div class="field"><label>Year</label>
+      <select id="f-year"><option value="">All years</option>
+      ${yearsAvailable().map(y=>`<option value="${esc(y)}" ${FILTERS.year===y?'selected':''}>${esc(y)}</option>`).join('')}
+      </select></div>
+    <div class="field"><label>Term</label>
+      <select id="f-term"><option value="">All terms</option>
+      ${termsAvailable().map(t=>`<option value="${esc(t)}" ${FILTERS.term===t?'selected':''}>${esc(t)}</option>`).join('')}
+      </select></div>
+    ${opts.feeType!==false?`<div class="field"><label>Fee category</label>
+      <select id="f-type"><option value="">All</option>
+      <option value="school" ${FILTERS.feeType==='school'?'selected':''}>School fees</option>
+      <option value="remedial" ${FILTERS.feeType==='remedial'?'selected':''}>Remedial fees</option>
+      </select></div>`:''}
+  </div>`;
+}
+function bindFilters(){
+  const map = {'f-school':'schoolId','f-class':'classId','f-year':'year','f-term':'term','f-type':'feeType'};
+  Object.keys(map).forEach(id => {
+    const el = $(id); if(!el) return;
+    el.onchange = () => { FILTERS[map[id]] = el.value; render(); };
+  });
+}
+
+/* ============================================================
+   PAGES
+   ============================================================ */
+
+async function pageDashboard(){
+  const schools = accessibleSchools();
+  if(!schools.length){
+    return `<div class="pagehead"><div><h1>Dashboard</h1><div class="sub">Financial overview</div></div></div>
+      ${isOwner()
+        ? '<div class="empty"><h3>Finance is not enabled for any school yet</h3><p>Open Finance Access to activate it for a school.</p><button class="btn primary" data-goto="access">Finance Access</button></div>'
+        : '<div class="empty"><h3>Finance is not enabled for your school</h3><p>Ask the Platform Owner to activate the Finance module for your school.</p></div>'}`;
+  }
+  /* default school filter for single-school users */
+  if(!FILTERS.schoolId && schools.length===1) FILTERS.schoolId = schools[0].id;
+
+  const opts = {
+    schoolId: FILTERS.schoolId || undefined,
+    classId: FILTERS.classId || undefined,
+    year: FILTERS.year || undefined,
+    term: FILTERS.term || undefined
+  };
+  const canSF = !FILTERS.schoolId || canAccessSchoolFees(FILTERS.schoolId);
+  const canRem = !FILTERS.schoolId || canAccessRemedial(FILTERS.schoolId, FILTERS.classId);
+
+  let schoolCharged=0, schoolPaid=0, remedialCharged=0, remedialPaid=0, pendingCount=0;
+  try{
+    if(canSF){
+      const [ch, pay, adj] = await Promise.all([
+        fetchCharges({...opts, feeType:'school'}),
+        fetchPayments({...opts, feeType:'school'}),
+        fetchAdjustments({...opts, feeType:'school'})
+      ]);
+      schoolCharged = ch.reduce((n,c)=>n+Number(c.amount||0),0) + adj.reduce((n,a)=>n+Number(a.amount||0),0);
+      schoolPaid = pay.reduce((n,p)=>n+Number(p.amount||0),0);
+    }
+    if(canRem){
+      const [ch, pay, adj, subs] = await Promise.all([
+        fetchCharges({...opts, feeType:'remedial'}),
+        fetchPayments({...opts, feeType:'remedial'}),
+        fetchAdjustments({...opts, feeType:'remedial'}),
+        fetchSubmissions({...opts, status:'pending'})
+      ]);
+      remedialCharged = ch.reduce((n,c)=>n+Number(c.amount||0),0) + adj.reduce((n,a)=>n+Number(a.amount||0),0);
+      remedialPaid = pay.reduce((n,p)=>n+Number(p.amount||0),0);
+      pendingCount = (subs||[]).length;
+    }
+  }catch(e){
+    console.error(e);
+    return `<div class="pagehead"><div><h1>Dashboard</h1></div></div>
+      <div class="warn-box">Could not load financial totals. ${esc(e.message||'')}<br>
+      Make sure the finance schema (01_finance_schema.sql) has been applied in Supabase.</div>`;
+  }
+
+  const schoolOut = schoolCharged - schoolPaid;
+  const remOut = remedialCharged - remedialPaid;
+
+  return `<div class="pagehead">
+      <div><h1>Financial Dashboard</h1><div class="sub">Overview of school and remedial fees</div></div>
+    </div>
+    ${filterBar()}
+    <div class="stat-row">
+      ${canSF?`
+        <div class="stat"><div class="n">${money(schoolCharged)}</div><div class="l">School fees charged</div></div>
+        <div class="stat accent"><div class="n">${money(schoolPaid)}</div><div class="l">School fees collected</div></div>
+        <div class="stat ${schoolOut>0?'danger':'accent'}"><div class="n">${money(schoolOut)}</div><div class="l">Outstanding school fees</div></div>
+      `:''}
+      ${canRem?`
+        <div class="stat"><div class="n">${money(remedialCharged)}</div><div class="l">Remedial fees charged</div></div>
+        <div class="stat accent"><div class="n">${money(remedialPaid)}</div><div class="l">Approved remedial payments</div></div>
+        <div class="stat ${remOut>0?'danger':'accent'}"><div class="n">${money(remOut)}</div><div class="l">Outstanding remedial</div></div>
+        <div class="stat warn"><div class="n">${pendingCount}</div><div class="l">Pending remedial approvals</div></div>
+      `:''}
+    </div>
+    <div class="panel">
+      <div class="panel-title"><h2>Quick links</h2></div>
+      <div class="actions">
+        ${canSF?`<button class="btn primary" data-goto="school-fees">School Fees</button>`:''}
+        ${canRem?`<button class="btn accent" data-goto="remedial">Remedial Fees</button>`:''}
+        <button class="btn" data-goto="learner">Learner Records</button>
+        ${canSF?`<button class="btn" data-goto="reports">Reports</button>`:''}
+      </div>
+    </div>`;
+}
+
+/* ---------- School Fees page ---------- */
+async function pageSchoolFees(){
+  const schools = accessibleSchools().filter(s => canAccessSchoolFees(s.id));
+  if(!schools.length){
+    return `<div class="pagehead"><div><h1>School Fees</h1></div></div>
+      <div class="warn-box">You do not have School Administrator access to any school. School Fees records are restricted to authorised School Administrators.</div>`;
+  }
+  if(!FILTERS.schoolId) FILTERS.schoolId = schools[0].id;
+  if(!canAccessSchoolFees(FILTERS.schoolId)) FILTERS.schoolId = schools[0].id;
+
+  const learners = accessibleStudents(FILTERS.schoolId, FILTERS.classId);
+  const opts = { schoolId: FILTERS.schoolId, classId: FILTERS.classId||undefined, year: FILTERS.year||undefined, term: FILTERS.term||undefined, feeType:'school' };
+  let charges=[], payments=[], adjustments=[];
+  try{
+    [charges, payments, adjustments] = await Promise.all([
+      fetchCharges(opts), fetchPayments(opts), fetchAdjustments(opts)
+    ]);
+  }catch(e){
+    return `<div class="pagehead"><div><h1>School Fees</h1></div></div><div class="warn-box">${esc(e.message)}</div>`;
+  }
+  const bal = computeBalances(learners, charges, payments, adjustments);
+  const rows = Object.values(bal).sort((a,b)=> (a.learner.name||'').localeCompare(b.learner.name||''));
+
+  const search = (STATE.params.q||'').toLowerCase();
+  const filtered = search ? rows.filter(r => {
+    const l = r.learner;
+    return (l.name||'').toLowerCase().includes(search)
+      || (l.id||'').toLowerCase().includes(search)
+      || (l.admNo||'').toLowerCase().includes(search)
+      || (classById(l.classId)?.name||'').toLowerCase().includes(search);
+  }) : rows;
+
+  return `<div class="pagehead">
+      <div><h1>School Fees</h1><div class="sub">${esc(schoolById(FILTERS.schoolId)?.name||'')} · ${filtered.length} learners</div></div>
+      <div class="actions">
+        <button class="btn primary" id="sf-set-fees">Set fees</button>
+        <button class="btn" id="sf-record-pay">Record payment</button>
+        <button class="btn" id="sf-adjust">Adjustment</button>
+      </div>
+    </div>
+    ${filterBar({feeType:false})}
+    <div class="searchbar">
+      <input type="text" id="sf-search" placeholder="Search by name, ID, admission no, class…" value="${esc(STATE.params.q||'')}">
+    </div>
+    <div class="panel" style="overflow-x:auto;">
+      <table class="data">
+        <thead><tr>
+          <th>Learner</th><th>Class</th><th>Adm No</th>
+          <th class="num">Charged</th><th class="num">Paid</th><th class="num">Outstanding</th>
+          <th>Status</th><th></th>
+        </tr></thead>
+        <tbody>
+          ${filtered.length? filtered.map(r => {
+            const l = r.learner;
+            const out = r.schoolOutstanding;
+            const status = r.schoolStatus;
+            const outLabel = out < -0.009 ? money(Math.abs(out))+' credit' : money(out);
+            return `<tr>
+              <td><strong>${esc(l.name)}</strong><div class="small mono">${esc(l.id)}</div></td>
+              <td>${esc(classById(l.classId)?.name||'—')}</td>
+              <td>${esc(l.admNo||'—')}</td>
+              <td class="num">${money(r.schoolCharged + r.schoolAdj)}</td>
+              <td class="num">${money(r.schoolPaid)}</td>
+              <td class="num">${outLabel}</td>
+              <td>${statusBadge(status)}</td>
+              <td><button class="btn sm" data-learner="${esc(l.id)}">View</button></td>
+            </tr>`;
+          }).join('') : `<tr><td colspan="8" class="center small">No learners match the current filters.</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/* ---------- Remedial Fees page ---------- */
+async function pageRemedial(){
+  const schools = accessibleSchools().filter(s => canAccessRemedial(s.id));
+  if(!schools.length){
+    return `<div class="pagehead"><div><h1>Remedial Fees</h1></div></div>
+      <div class="warn-box">You do not have access to remedial fees for any class.</div>`;
+  }
+  if(!FILTERS.schoolId) FILTERS.schoolId = schools[0].id;
+
+  const isAdmin = canAccessSchoolFees(FILTERS.schoolId);
+  const learners = accessibleStudents(FILTERS.schoolId, FILTERS.classId);
+  const opts = { schoolId: FILTERS.schoolId, classId: FILTERS.classId||undefined, year: FILTERS.year||undefined, term: FILTERS.term||undefined };
+
+  let charges=[], payments=[], adjustments=[], pending=[];
+  try{
+    [charges, payments, adjustments, pending] = await Promise.all([
+      fetchCharges({...opts, feeType:'remedial'}),
+      fetchPayments({...opts, feeType:'remedial'}),
+      fetchAdjustments({...opts, feeType:'remedial'}),
+      isAdmin ? fetchSubmissions({...opts, status:'pending'}) : Promise.resolve([])
+    ]);
+  }catch(e){
+    return `<div class="pagehead"><div><h1>Remedial Fees</h1></div></div><div class="warn-box">${esc(e.message)}</div>`;
+  }
+  const bal = computeBalances(learners, charges, payments, adjustments);
+  const rows = Object.values(bal).sort((a,b)=> (a.learner.name||'').localeCompare(b.learner.name||''));
+
+  return `<div class="pagehead">
+      <div><h1>Remedial Fees</h1><div class="sub">${esc(schoolById(FILTERS.schoolId)?.name||'')}</div></div>
+      <div class="actions">
+        <button class="btn primary" id="rm-submit">Submit payment</button>
+        ${isAdmin?`<button class="btn accent" id="rm-set-fees">Set remedial fees</button>`:''}
+      </div>
+    </div>
+    ${filterBar({feeType:false})}
+    ${isAdmin && pending.length?`
+      <div class="panel">
+        <div class="panel-title"><h2>Pending approvals (${pending.length})</h2></div>
+        <table class="data">
+          <thead><tr><th>Learner</th><th>Class</th><th class="num">Amount</th><th>Date</th><th>Method</th><th>Submitted by</th><th></th></tr></thead>
+          <tbody>
+            ${pending.map(s => {
+              const l = studentById(s.learner_id);
+              return `<tr>
+                <td>${esc(l?.name||s.learner_id)}</td>
+                <td>${esc(classById(s.class_id)?.name||'—')}</td>
+                <td class="num">${money(s.amount)}</td>
+                <td>${esc(s.payment_date)}</td>
+                <td>${esc(s.method||'—')}${s.reference?' · '+esc(s.reference):''}</td>
+                <td class="small">${esc(s.submitted_by)}</td>
+                <td>
+                  <button class="btn sm primary" data-approve="${esc(s.id)}">Approve</button>
+                  <button class="btn sm danger" data-reject="${esc(s.id)}">Reject</button>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`:''}
+    <div class="panel" style="overflow-x:auto;">
+      <table class="data">
+        <thead><tr>
+          <th>Learner</th><th>Class</th>
+          <th class="num">Charged</th><th class="num">Approved paid</th><th class="num">Outstanding</th>
+          <th></th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => {
+            const l = r.learner;
+            return `<tr>
+              <td><strong>${esc(l.name)}</strong><div class="small mono">${esc(l.id)}</div></td>
+              <td>${esc(classById(l.classId)?.name||'—')}</td>
+              <td class="num">${money(r.remedialCharged + r.remedialAdj)}</td>
+              <td class="num">${money(r.remedialPaid)}</td>
+              <td class="num">${money(r.remedialOutstanding)}</td>
+              <td><button class="btn sm" data-learner-rem="${esc(l.id)}">View</button></td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="6" class="center small">No learners in scope.</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/* ---------- Learner financial record ---------- */
+async function pageLearner(){
+  const q = (STATE.params.q||'').toLowerCase();
+  let list = accessibleStudents(FILTERS.schoolId||undefined, FILTERS.classId||undefined);
+  if(q) list = list.filter(l =>
+    (l.name||'').toLowerCase().includes(q) ||
+    (l.id||'').toLowerCase().includes(q) ||
+    (l.admNo||'').toLowerCase().includes(q)
+  );
+  list = list.slice(0, 200);
+
+  return `<div class="pagehead">
+      <div><h1>Learner Financial Records</h1><div class="sub">School fees and remedial fees are shown separately</div></div>
+    </div>
+    ${filterBar()}
+    <div class="searchbar">
+      <input type="text" id="lr-search" placeholder="Search learners…" value="${esc(STATE.params.q||'')}">
+    </div>
+    <div class="panel" style="overflow-x:auto;">
+      <table class="data">
+        <thead><tr>
+          <th>Learner</th><th>School</th><th>Class</th><th>Adm No</th>
+          <th></th>
+        </tr></thead>
+        <tbody>
+          ${list.map(l => `<tr>
+            <td><strong>${esc(l.name)}</strong><div class="small mono">${esc(l.id)}</div></td>
+            <td>${esc(schoolById(l.schoolId)?.name||'—')}</td>
+            <td>${esc(classById(l.classId)?.name||'—')}</td>
+            <td>${esc(l.admNo||'—')}</td>
+            <td><button class="btn sm" data-open-learner="${esc(l.id)}">Open record</button></td>
+          </tr>`).join('') || `<tr><td colspan="5" class="center small">No learners found.</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+async function showLearnerRecord(learnerId){
+  const l = studentById(learnerId);
+  if(!l) return toast('Learner not found','error');
+  const canSF = canAccessSchoolFees(l.schoolId);
+  const canRem = canAccessRemedial(l.schoolId, l.classId);
+  if(!canSF && !canRem) return toast('Not authorised','error');
+
+  const year = FILTERS.year || '', term = FILTERS.term || '';
+  const opts = { learnerId, schoolId: l.schoolId, year: year||undefined, term: term||undefined };
+  let charges=[], payments=[], adjustments=[], pending=[];
+  try{
+    [charges, payments, adjustments, pending] = await Promise.all([
+      fetchCharges(opts),
+      fetchPayments(opts),
+      fetchAdjustments(opts),
+      canRem ? fetchSubmissions({ schoolId:l.schoolId, learnerId, status:'pending' }).catch(()=>[]) : []
+    ]);
+  }catch(e){ toast(e.message,'error'); return; }
+
+  const schoolCh = charges.filter(c=>c.fee_type==='school');
+  const schoolPay = payments.filter(p=>p.fee_type==='school');
+  const schoolAdj = adjustments.filter(a=>a.fee_type==='school');
+  const remCh = charges.filter(c=>c.fee_type==='remedial');
+  const remPay = payments.filter(p=>p.fee_type==='remedial');
+  const remAdj = adjustments.filter(a=>a.fee_type==='remedial');
+
+  const sCharged = schoolCh.reduce((n,c)=>n+Number(c.amount),0) + schoolAdj.reduce((n,a)=>n+Number(a.amount),0);
+  const sPaid = schoolPay.reduce((n,p)=>n+Number(p.amount),0);
+  const rCharged = remCh.reduce((n,c)=>n+Number(c.amount),0) + remAdj.reduce((n,a)=>n+Number(a.amount),0);
+  const rPaid = remPay.reduce((n,p)=>n+Number(p.amount),0);
+
+  openModal(`<div class="modal-head"><h2>${esc(l.name)}</h2><button class="x" data-close>✕</button></div>
+    <p class="small">${esc(schoolById(l.schoolId)?.name||'')} · ${esc(classById(l.classId)?.name||'')} · ID ${esc(l.id)}${l.admNo?' · Adm '+esc(l.admNo):''}</p>
+    <div class="grid cols-2" style="margin:14px 0;">
+      ${canSF?`<div class="stat"><div class="n" style="font-size:20px;">${money(sCharged-sPaid)}</div><div class="l">School fees outstanding</div>
+        <div class="small" style="margin-top:6px;">Charged ${money(sCharged)} · Paid ${money(sPaid)}</div></div>`:''}
+      ${canRem?`<div class="stat"><div class="n" style="font-size:20px;">${money(rCharged-rPaid)}</div><div class="l">Remedial outstanding</div>
+        <div class="small" style="margin-top:6px;">Charged ${money(rCharged)} · Paid ${money(rPaid)}</div></div>`:''}
+    </div>
+    ${canSF?`<h3 style="margin-top:12px;">School fee payments</h3>
+      <table class="data"><thead><tr><th>Date</th><th class="num">Amount</th><th>Method</th><th>Ref</th></tr></thead>
+      <tbody>${schoolPay.map(p=>`<tr><td>${esc(p.payment_date)}</td><td class="num">${money(p.amount)}</td><td>${esc(p.method||'—')}</td><td>${esc(p.reference||'—')}</td></tr>`).join('')||'<tr><td colspan="4" class="small">No payments yet.</td></tr>'}</tbody></table>`:''}
+    ${canRem?`<h3 style="margin-top:12px;">Approved remedial payments</h3>
+      <table class="data"><thead><tr><th>Date</th><th class="num">Amount</th><th>Method</th><th>Ref</th></tr></thead>
+      <tbody>${remPay.map(p=>`<tr><td>${esc(p.payment_date)}</td><td class="num">${money(p.amount)}</td><td>${esc(p.method||'—')}</td><td>${esc(p.reference||'—')}</td></tr>`).join('')||'<tr><td colspan="4" class="small">No approved payments yet.</td></tr>'}</tbody></table>
+      ${pending.length?`<p class="small" style="margin-top:8px;"><span class="badge pending">${pending.length} pending submission(s)</span></p>`:''}`:''}
+    <div class="modal-foot"><button class="btn" data-close>Close</button></div>`, true);
+}
+
+/* ---------- Reports (simple) ---------- */
+async function pageReports(){
+  const schools = accessibleSchools();
+  const canSF = schools.some(s => canAccessSchoolFees(s.id));
+  const canRem = schools.some(s => canAccessRemedial(s.id));
+  if(!canSF && !canRem){
+    return `<div class="pagehead"><div><h1>Reports</h1></div></div><div class="warn-box">You do not have access to financial reports.</div>`;
+  }
+  if(!FILTERS.schoolId && schools.length) FILTERS.schoolId = schools[0].id;
+
+  return `<div class="pagehead"><div><h1>Reports</h1><div class="sub">Class summaries, collection and outstanding reports</div></div></div>
+    ${filterBar()}
+    <div class="panel">
+      <div class="panel-title"><h2>Available reports</h2></div>
+      <div class="actions">
+        ${canSF?`<button class="btn primary" id="rpt-collection">School fees collection</button>
+        <button class="btn" id="rpt-outstanding">School fees by class</button>`:''}
+        ${canRem?`<button class="btn accent" id="rpt-remedial-class">Remedial by class</button>
+        <button class="btn" id="rpt-pending">Pending remedial</button>`:''}
+        <button class="btn" id="rpt-statement">Learner statement</button>
+      </div>
+      <p class="small" style="margin-top:12px;">Reports use the current filters (school, class, year, term). Print or export to CSV.</p>
+    </div>
+    <div id="report-out"></div>`;
+}
+
+/* ---------- Modals: set fees, record payment, submit remedial ---------- */
+function modalSetFees(feeType){
+  const schools = accessibleSchools().filter(s => canAccessSchoolFees(s.id));
+  const sid = FILTERS.schoolId || schools[0]?.id;
+  const classes = accessibleClasses(sid);
+  openModal(`<div class="modal-head"><h2>Set ${feeType==='remedial'?'remedial':'school'} fees</h2><button class="x" data-close>✕</button></div>
+    <div class="field"><label>School</label><select id="m-school">${schools.map(s=>`<option value="${esc(s.id)}" ${s.id===sid?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+    <div class="field"><label>Class (leave blank for school-wide)</label>
+      <select id="m-class"><option value="">All classes / school default</option>
+      ${classes.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></div>
+    <div class="grid cols-2">
+      <div class="field"><label>Academic year</label><select id="m-year">${yearsAvailable().map(y=>`<option value="${esc(y)}" ${FILTERS.year===y?'selected':''}>${esc(y)}</option>`).join('')}</select></div>
+      <div class="field"><label>Term</label><select id="m-term">${termsAvailable().map(t=>`<option value="${esc(t)}" ${FILTERS.term===t?'selected':''}>${esc(t)}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Amount</label><input type="number" id="m-amount" min="0" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label>Description (optional)</label><input type="text" id="m-desc" placeholder="e.g. Term 1 school fees"></div>
+    <div class="field"><label>Apply to</label>
+      <select id="m-scope"><option value="structure">Fee structure (default for class / school)</option>
+      <option value="all-learners">Create charge for every current learner in the class</option></select></div>
+    <div class="modal-foot"><button class="btn" data-close>Cancel</button><button class="btn primary" id="m-save">Save</button></div>`);
+  $('m-save').onclick = async () => {
+    const schoolId = $('m-school').value;
+    const classId = $('m-class').value || null;
+    const year = $('m-year').value;
+    const term = $('m-term').value;
+    const amount = Number($('m-amount').value);
+    const desc = $('m-desc').value.trim();
+    const scope = $('m-scope').value;
+    if(!year || !term || !(amount>=0)) return toast('Year, term and amount are required','error');
+    try{
+      const structId = uid('fs');
+      await sbOk(dbHandle.from('finance_fee_structures').upsert({
+        id: structId, school_id: schoolId, academic_year: year, term, fee_type: feeType,
+        class_id: classId, amount, description: desc||null, created_by: CURRENT_USER.id, updated_at: new Date().toISOString()
+      }, { onConflict: 'school_id,academic_year,term,fee_type,class_id' }));
+      if(scope === 'all-learners'){
+        const learners = accessibleStudents(schoolId, classId||undefined);
+        if(!learners.length) toast('No learners found for that class','warn');
+        else {
+          const rows = learners.map(l => ({
+            id: uid('ch'), school_id: schoolId, learner_id: l.id, class_id: l.classId,
+            academic_year: year, term, fee_type: feeType, amount, description: desc||null, created_by: CURRENT_USER.id
+          }));
+          /* One base charge per learner/term/fee type (DB-enforced).
+             Existing charges are skipped; use Adjustment to change them. */
+          let created = 0;
+          for(let i=0;i<rows.length;i+=40){
+            const done = await sbOk(dbHandle.from('finance_charges')
+              .upsert(rows.slice(i,i+40), { onConflict:'learner_id,academic_year,term,fee_type', ignoreDuplicates:true })
+              .select('id'));
+            created += (done||[]).length;
+          }
+          const skipped = rows.length - created;
+          toast(`Fees set for ${created} learner(s)` + (skipped ? ` · ${skipped} already charged (use Adjustment to change)` : ''), skipped && !created ? 'warn' : 'success');
+        }
+      } else toast('Fee structure saved','success');
+      closeModal(); render();
+    }catch(e){ toast(e.message||'Save failed','error'); }
+  };
+}
+
+function modalRecordPayment(){
+  const schools = accessibleSchools().filter(s => canAccessSchoolFees(s.id));
+  const sid = FILTERS.schoolId || schools[0]?.id;
+  const learners = accessibleStudents(sid, FILTERS.classId||undefined);
+  openModal(`<div class="modal-head"><h2>Record school fees payment</h2><button class="x" data-close>✕</button></div>
+    <div class="field"><label>Learner</label>
+      <select id="m-learner">${learners.map(l=>`<option value="${esc(l.id)}">${esc(l.name)} (${esc(classById(l.classId)?.name||'')})</option>`).join('')}</select></div>
+    <div class="grid cols-2">
+      <div class="field"><label>Year</label><select id="m-year">${yearsAvailable().map(y=>`<option value="${esc(y)}" ${FILTERS.year===y?'selected':''}>${esc(y)}</option>`).join('')}</select></div>
+      <div class="field"><label>Term</label><select id="m-term">${termsAvailable().map(t=>`<option value="${esc(t)}" ${FILTERS.term===t?'selected':''}>${esc(t)}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Amount</label><input type="number" id="m-amount" min="0.01" step="0.01"></div>
+    <div class="field"><label>Payment date</label><input type="date" id="m-date" value="${today()}"></div>
+    <div class="field"><label>Method</label>
+      <select id="m-method"><option value="cash">Cash</option><option value="mpesa">M-Pesa</option><option value="bank">Bank</option><option value="other">Other</option></select></div>
+    <div class="field"><label>Reference (M-Pesa / receipt)</label><input type="text" id="m-ref"></div>
+    <div class="field"><label>Notes</label><input type="text" id="m-notes"></div>
+    <div class="modal-foot"><button class="btn" data-close>Cancel</button><button class="btn primary" id="m-save">Save payment</button></div>`);
+  $('m-save').onclick = async () => {
+    const learnerId = $('m-learner').value;
+    const l = studentById(learnerId);
+    if(!l) return toast('Learner required','error');
+    const amount = Number($('m-amount').value);
+    if(!(amount>0)) return toast('Enter a valid amount','error');
+    try{
+      await sbOk(dbHandle.from('finance_payments').insert({
+        id: uid('pay'), school_id: l.schoolId, learner_id: l.id, class_id: l.classId,
+        academic_year: $('m-year').value, term: $('m-term').value, fee_type: 'school',
+        amount, payment_date: $('m-date').value, method: $('m-method').value,
+        reference: $('m-ref').value.trim()||null, notes: $('m-notes').value.trim()||null,
+        status: 'confirmed', submitted_by: CURRENT_USER.id, approved_by: CURRENT_USER.id,
+        approved_at: new Date().toISOString()
+      }));
+      toast('Payment recorded','success'); closeModal(); render();
+    }catch(e){ toast(e.message||'Failed','error'); }
+  };
+}
+
+function modalAdjustment(feeType){
+  const sid = FILTERS.schoolId;
+  if(!sid || !canAccessSchoolFees(sid)) return toast('Select a school you administer','error');
+  const learners = accessibleStudents(sid, FILTERS.classId||undefined);
+  if(!learners.length) return toast('No learners in scope','error');
+  openModal(`<div class="modal-head"><h2>Fee adjustment</h2><button class="x" data-close>✕</button></div>
+    <p class="small">Positive amount adds to the balance (penalty/extra charge). Negative reduces it (discount, waiver, correction).</p>
+    <div class="field"><label>Learner</label>
+      <select id="m-learner">${learners.map(l=>`<option value="${esc(l.id)}">${esc(l.name)} (${esc(classById(l.classId)?.name||'')})</option>`).join('')}</select></div>
+    <div class="grid cols-2">
+      <div class="field"><label>Year</label><select id="m-year">${yearsAvailable().map(y=>`<option value="${esc(y)}" ${FILTERS.year===y?'selected':''}>${esc(y)}</option>`).join('')}</select></div>
+      <div class="field"><label>Term</label><select id="m-term">${termsAvailable().map(t=>`<option value="${esc(t)}" ${FILTERS.term===t?'selected':''}>${esc(t)}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Amount (use − for a reduction)</label><input type="number" id="m-amount" step="0.01"></div>
+    <div class="field"><label>Reason (required)</label><input type="text" id="m-reason" placeholder="e.g. Sibling discount"></div>
+    <div class="modal-foot"><button class="btn" data-close>Cancel</button><button class="btn primary" id="m-save">Save adjustment</button></div>`);
+  $('m-save').onclick = async () => {
+    const l = studentById($('m-learner').value);
+    const amount = Number($('m-amount').value);
+    const reason = $('m-reason').value.trim();
+    if(!l) return toast('Learner required','error');
+    if(!amount) return toast('Enter a non-zero amount','error');
+    if(!reason) return toast('A reason is required','error');
+    $('m-save').disabled = true;
+    try{
+      await sbOk(dbHandle.from('finance_adjustments').insert({
+        id: uid('adj'), school_id: l.schoolId, learner_id: l.id, class_id: l.classId || null,
+        academic_year: $('m-year').value, term: $('m-term').value, fee_type: feeType,
+        amount, reason, created_by: CURRENT_USER.id
+      }));
+      toast('Adjustment saved','success'); closeModal(); render();
+    }catch(e){ $('m-save').disabled = false; toast(e.message||'Failed','error'); }
+  };
+}
+
+function modalSubmitRemedial(){
+  const learners = accessibleStudents(FILTERS.schoolId||undefined, FILTERS.classId||undefined)
+    .filter(l => canAccessRemedial(l.schoolId, l.classId));
+  if(!learners.length) return toast('No learners in your classes','error');
+  openModal(`<div class="modal-head"><h2>Submit remedial payment</h2><button class="x" data-close>✕</button></div>
+    <p class="small">This submission will be sent to the School Administrator for approval. It does not reduce the balance until approved.</p>
+    <div class="field"><label>Learner</label>
+      <select id="m-learner">${learners.map(l=>`<option value="${esc(l.id)}">${esc(l.name)} (${esc(classById(l.classId)?.name||'')})</option>`).join('')}</select></div>
+    <div class="grid cols-2">
+      <div class="field"><label>Year</label><select id="m-year">${yearsAvailable().map(y=>`<option value="${esc(y)}" ${FILTERS.year===y?'selected':''}>${esc(y)}</option>`).join('')}</select></div>
+      <div class="field"><label>Term</label><select id="m-term">${termsAvailable().map(t=>`<option value="${esc(t)}" ${FILTERS.term===t?'selected':''}>${esc(t)}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Amount paid</label><input type="number" id="m-amount" min="0.01" step="0.01"></div>
+    <div class="field"><label>Payment date</label><input type="date" id="m-date" value="${today()}"></div>
+    <div class="field"><label>Method</label>
+      <select id="m-method"><option value="cash">Cash</option><option value="mpesa">M-Pesa</option><option value="bank">Bank</option><option value="other">Other</option></select></div>
+    <div class="field"><label>M-Pesa / transaction reference</label><input type="text" id="m-ref" placeholder="Required for M-Pesa"></div>
+    <div class="field"><label>Notes</label><input type="text" id="m-notes"></div>
+    <div class="modal-foot"><button class="btn" data-close>Cancel</button><button class="btn primary" id="m-save">Submit for approval</button></div>`);
+  $('m-save').onclick = async () => {
+    const learnerId = $('m-learner').value;
+    const l = studentById(learnerId);
+    if(!l) return toast('Learner required','error');
+    const amount = Number($('m-amount').value);
+    if(!(amount>0)) return toast('Enter a valid amount','error');
+    const method = $('m-method').value;
+    const ref = $('m-ref').value.trim();
+    if(method==='mpesa' && !ref) return toast('Enter the M-Pesa transaction reference','error');
+    try{
+      await sbOk(dbHandle.rpc('finance_submit_remedial', {
+        p_id: uid('sub'), p_school_id: l.schoolId, p_learner_id: l.id, p_class_id: l.classId || null,
+        p_year: $('m-year').value, p_term: $('m-term').value, p_amount: amount,
+        p_date: $('m-date').value, p_method: method, p_reference: ref || null,
+        p_notes: $('m-notes').value.trim() || null,
+        p_notify_body: `${CURRENT_USER.name||'A teacher'} submitted ${money(amount)} for ${l.name}.`
+      }));
+      toast('Submitted for approval','success'); closeModal(); render();
+    }catch(e){ toast(e.message||'Failed','error'); }
+  };
+}
+
+async function reviewSubmission(id, action){
+  if(action==='reject'){
+    const reason = prompt('Rejection reason (visible to the teacher):');
+    if(reason===null) return;
+    try{
+      await sbOk(dbHandle.rpc('finance_review_submission', { p_submission_id: id, p_action: 'reject', p_reason: reason||'Rejected' }));
+      toast('Submission rejected','success'); render();
+    }catch(e){ toast(e.message||'Failed','error'); }
+    return;
+  }
+  try{
+    await sbOk(dbHandle.rpc('finance_review_submission', { p_submission_id: id, p_action: 'approve', p_reason: null }));
+    toast('Payment approved — balance updated','success'); render();
+  }catch(e){ toast(e.message||'Failed','error'); }
+}
+
+/* ---------- Report Forms: per-learner fees, fee slips, SMS ---------- */
+const DEFAULT_CC = '254';   // country code used for numbers written like 07xx...
+const PHONE_KEYS = ['parentPhone','guardianPhone','parent_phone','guardian_phone','parentContact','guardianContact','parentTel','guardianTel','phone','mobile','contact','telephone'];
+const SMS_TPL = 'Dear Parent, {name} ({class}) {term} {year} fee balance: School fees {cur} {school_fees}, Remedial {cur} {remedial}. Total {cur} {total}. Thank you. {school}';
+let RF = { rows: [], opts: {} };
+
+function learnerPhone(l){ for(const k of PHONE_KEYS){ if(l && l[k]) return String(l[k]); } return ''; }
+function normPhone(p){
+  const d = String(p||'').replace(/[^\d+]/g,'');
+  if(!d) return '';
+  if(d.startsWith('+')) return d;
+  if(d.startsWith(DEFAULT_CC)) return '+' + d;
+  if(d.startsWith('0')) return '+' + DEFAULT_CC + d.slice(1);
+  return d.length === 9 ? '+' + DEFAULT_CC + d : '+' + d;
+}
+const fmtN = n => Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
+function fillTpl(tpl, r, o){
+  const m = { name:r.name, class:r.cls, term:o.scope==='term'?o.term:'all terms', year:o.scope==='term'?o.year:'',
+    school_fees:fmtN(r.sb), remedial:fmtN(r.rb), total:fmtN(r.total), cur:o.cur, school:o.school };
+  return tpl.replace(/\{(\w+)\}/g,(x,k)=> k in m ? m[k] : x).replace(/\s{2,}/g,' ').trim();
+}
+
+async function pageReportForms(){
+  const schools = accessibleSchools().filter(s => canAccessSchoolFees(s.id));
+  if(!schools.length) return `<div class="pagehead"><div><h1>Report Forms</h1></div></div><div class="warn-box">Report form fees are available to School Administrators of Finance-enabled schools.</div>`;
+  if(!FILTERS.schoolId || !canAccessSchoolFees(FILTERS.schoolId)) FILTERS.schoolId = schools[0].id;
+  return `<div class="pagehead"><div><h1>Report Forms</h1>
+      <div class="sub">Each learner’s own fee amount for the report form · print slips or send SMS</div></div></div>
+    ${filterBar({feeType:false})}
+    <div class="panel">
+      <div class="grid cols-2">
+        <div class="field"><label>Fees to show</label><select id="rf-inc">
+          <option value="both">School fees + Remedial</option><option value="school">School fees only</option><option value="remedial">Remedial only</option></select></div>
+        <div class="field"><label>Amount covers</label><select id="rf-scope">
+          <option value="term">Selected year &amp; term only</option><option value="all">All outstanding to date (arrears included)</option></select></div>
+        <div class="field"><label>Fee slips per page</label><select id="rf-perpage"><option value="1">1 learner per page</option><option value="2">2 learners per page (saves paper)</option></select></div>
+        <div class="field"><label>Currency</label><input type="text" id="rf-cur" value="KES"></div>
+        <div class="field"><label>Note on fee slip (optional)</label><input type="text" id="rf-note" placeholder="e.g. Pay via Paybill 123456 before opening day"></div>
+      </div>
+      <div class="field"><label>SMS template — use {name} {class} {term} {year} {school_fees} {remedial} {total} {cur} {school}</label>
+        <textarea id="rf-tpl" rows="3" style="width:100%">${esc(SMS_TPL)}</textarea></div>
+      <button class="btn primary" id="rf-build">Show learner fees</button>
+    </div>
+    <div id="rf-out"></div>`;
+}
+
+async function buildReportForms(){
+  const out = $('rf-out'), sid = FILTERS.schoolId;
+  const scope = $('rf-scope').value, inc = $('rf-inc').value;
+  if(!sid || !canAccessSchoolFees(sid)) return toast('Select a school','error');
+  if(scope==='term' && (!FILTERS.year || !FILTERS.term)) return toast('Choose a year and term in the filters','error');
+  out.innerHTML = '<div class="panel"><p class="small">Calculating each learner’s balance…</p></div>';
+  const o = { schoolId:sid, classId:FILTERS.classId||undefined };
+  if(scope==='term'){ o.year = FILTERS.year; o.term = FILTERS.term; }
+  try{
+    const [ch,pay,adj] = await Promise.all([fetchCharges(o), fetchPayments(o), fetchAdjustments(o)]);
+    const learners = accessibleStudents(sid, FILTERS.classId||undefined);
+    const bal = computeBalances(learners, ch, pay, adj);
+    const useS = inc !== 'remedial', useR = inc !== 'school';
+    RF = { opts:{ scope, inc, school:schoolById(sid)?.name||'', year:FILTERS.year, term:FILTERS.term,
+        cur:$('rf-cur').value.trim()||'KES', note:$('rf-note').value.trim(), tpl:$('rf-tpl').value, sid },
+      rows:Object.values(bal).map(r => {
+        const l = r.learner, sb = useS ? r.schoolOutstanding : 0, rb = useR ? r.remedialOutstanding : 0;
+        return { id:l.id, name:l.name||l.id, cls:classById(l.classId)?.name||'', adm:l.admNo||'',
+          sc:useS ? r.schoolCharged+r.schoolAdj : 0, sp:useS ? r.schoolPaid : 0, sb,
+          rc:useR ? r.remedialCharged+r.remedialAdj : 0, rp:useR ? r.remedialPaid : 0, rb,
+          total:sb+rb, phone:normPhone(learnerPhone(l)) };
+      }).sort((a,b)=> a.cls.localeCompare(b.cls) || a.name.localeCompare(b.name)) };
+    renderRF();
+  }catch(e){ out.innerHTML = `<div class="warn-box">${esc(e.message||e)}</div>`; }
+}
+
+function renderRF(){
+  const { rows, opts } = RF, useS = opts.inc !== 'remedial', useR = opts.inc !== 'school';
+  const owing = rows.filter(r => r.total > 0.009);
+  const tot = rows.reduce((n,r)=>n+r.total,0);
+  $('rf-out').innerHTML = `<div class="panel" style="overflow-x:auto;">
+    <div class="panel-title"><h2>${rows.length} learners · ${owing.length} with a balance · ${opts.cur} ${money(tot)}</h2>
+      <div class="actions"><button class="btn sm" id="rf-print">Print all (${rows.length})</button>
+      <button class="btn sm" id="rf-print-sel">Print selected (0)</button>
+      <button class="btn sm" id="rf-csv">Export CSV</button>
+      <button class="btn sm primary" id="rf-sms">Send SMS</button></div></div>
+    <table class="data"><thead><tr><th><input type="checkbox" id="rf-all" checked title="Select all (for Print selected and SMS)"></th><th>Learner</th><th>Class</th>
+      ${useS?'<th class="num">School fees</th>':''}${useR?'<th class="num">Remedial</th>':''}<th class="num">Total</th><th>Phone (for SMS)</th><th></th></tr></thead>
+    <tbody>${rows.map((r,i)=>`<tr>
+      <td><input type="checkbox" class="rf-sel" data-i="${i}" ${r.total>0.009&&r.phone?'checked':''}></td>
+      <td><strong>${esc(r.name)}</strong><div class="small">${esc(r.adm)}</div></td><td>${esc(r.cls)}</td>
+      ${useS?`<td class="num">${money(r.sb)}</td>`:''}${useR?`<td class="num">${money(r.rb)}</td>`:''}
+      <td class="num"><strong>${r.total<-0.009?money(-r.total)+' cr':money(r.total)}</strong></td>
+      <td><input type="text" class="rf-ph" data-i="${i}" value="${esc(r.phone)}" placeholder="No number" style="width:130px"></td>
+      <td><button class="btn sm rf-one" data-i="${i}">Print</button></td></tr>`).join('')
+      || '<tr><td colspan="8" class="small">No learners.</td></tr>'}</tbody></table>
+    <p class="small" style="margin-top:8px;">Amounts = charges + adjustments − confirmed payments. Pending remedial submissions are not deducted. “cr” = credit.</p></div>`;
+  $('rf-all').onchange = e => document.querySelectorAll('.rf-sel').forEach(c => c.checked = e.target.checked);
+  document.querySelectorAll('.rf-ph').forEach(i => i.onchange = () => { RF.rows[i.dataset.i].phone = normPhone(i.value); i.value = RF.rows[i.dataset.i].phone; });
+  const selRows = () => [...document.querySelectorAll('.rf-sel')].filter(c => c.checked).map(c => RF.rows[c.dataset.i]);
+  const updSel = () => { $('rf-print-sel').textContent = `Print selected (${selRows().length})`; };
+  document.querySelectorAll('.rf-sel').forEach(c => c.addEventListener('change', updSel));
+  $('rf-all').addEventListener('change', updSel);
+  $('rf-print').onclick = () => printSlips();
+  $('rf-print-sel').onclick = () => { const r = selRows(); r.length ? printSlips(r) : toast('Tick the learners you want to print','warn'); };
+  document.querySelectorAll('.rf-one').forEach(b => b.onclick = () => printSlips([RF.rows[b.dataset.i]]));
+  updSel();
+  $('rf-csv').onclick = () => downloadCsv('report-form-fees.csv', rows.map(r => ({ Learner:r.name, AdmNo:r.adm, Class:r.cls,
+    SchoolFeesBalance:r.sb, RemedialBalance:r.rb, TotalBalance:r.total, Phone:r.phone })));
+  $('rf-sms').onclick = confirmSms;
+}
+
+function printSlips(list){
+  const { opts } = RF, rows = list || RF.rows, useS = opts.inc !== 'remedial', useR = opts.inc !== 'school';
+  if(!rows.length) return toast('Nothing to print','warn');
+  if(!$('rf-style')){
+    const st = document.createElement('style'); st.id = 'rf-style';
+    st.textContent = '#rf-print{display:none}.rf-slip{height:128mm;box-sizing:border-box;border:1px dashed #888;padding:9mm;margin:0 0 4mm;page-break-inside:avoid;color:#000;font-family:Arial,sans-serif;font-size:12px}.rf-slip table{width:100%;border-collapse:collapse;margin:8px 0}.rf-slip td,.rf-slip th{border:1px solid #999;padding:4px 6px;text-align:right}.rf-slip th:first-child,.rf-slip td:first-child{text-align:left}.rf-slip.one{height:auto;min-height:120mm;page-break-after:always;font-size:14px}.rf-slip.one:last-child{page-break-after:auto}@media print{body.rf-printing>*:not(#rf-print){display:none!important}body.rf-printing #rf-print{display:block!important}}';
+    document.head.appendChild(st);
+  }
+  let root = $('rf-print'); if(!root){ root = document.createElement('div'); root.id = 'rf-print'; document.body.appendChild(root); }
+  const per = ($('rf-perpage')||{}).value === '2' ? 2 : 1;
+  const period = opts.scope==='term' ? `${esc(opts.term)} ${esc(opts.year)}` : 'All outstanding to date';
+  root.innerHTML = rows.map(r => {
+    const line = (lbl,c,p,b) => `<tr><td>${lbl}</td><td>${money(c)}</td><td>${money(p)}</td><td>${b<-0.009?money(-b)+' credit':money(b)}</td></tr>`;
+    return `<div class="rf-slip${per===1?' one':''}"><div style="text-align:center"><strong style="font-size:15px">${esc(opts.school)}</strong><br>Report Form Fee Statement · ${period}</div>
+      <p><strong>${esc(r.name)}</strong> · ${esc(r.cls)}${r.adm?' · Adm '+esc(r.adm):''}</p>
+      <table><tr><th>Fee</th><th>Charged (${esc(opts.cur)})</th><th>Paid</th><th>Balance</th></tr>
+      ${useS?line('School fees',r.sc,r.sp,r.sb):''}${useR?line('Remedial fees',r.rc,r.rp,r.rb):''}
+      <tr><td><strong>Total balance</strong></td><td></td><td></td><td><strong>${r.total<-0.009?money(-r.total)+' credit':money(r.total)}</strong></td></tr></table>
+      ${opts.note?`<p>${esc(opts.note)}</p>`:''}<p style="font-size:10px;color:#555">Printed ${esc(today())}</p></div>`;
+  }).join('');
+  document.body.classList.add('rf-printing');
+  window.addEventListener('afterprint', () => document.body.classList.remove('rf-printing'), { once:true });
+  window.print();
+}
+
+function confirmSms(){
+  const { rows, opts } = RF;
+  const picked = [...document.querySelectorAll('.rf-sel')].filter(c => c.checked).map(c => rows[c.dataset.i]);
+  const ok = picked.filter(r => /^\+\d{9,15}$/.test(r.phone));
+  const skipped = picked.length - ok.length;
+  if(!ok.length) return toast('Select learners who have a valid phone number','error');
+  const sample = fillTpl(opts.tpl, ok[0], opts);
+  const segs = Math.ceil(sample.length / 160);
+  openModal(`<div class="modal-head"><h2>Send SMS</h2><button class="x" data-close>✕</button></div>
+    <p><strong>${ok.length}</strong> message(s) will be sent, each with that learner’s own amount.${skipped?` ${skipped} selected learner(s) skipped (no valid number).`:''}</p>
+    <p class="small">Sample (${sample.length} characters, about ${segs} SMS part(s) each):</p>
+    <div class="warn-box" style="background:var(--primary-soft);color:var(--ink)">${esc(sample)}</div>
+    <p class="small">Your SMS provider charges per message part.</p>
+    <div class="modal-foot"><button class="btn" data-close>Cancel</button><button class="btn primary" id="sms-go">Send ${ok.length} SMS</button></div>`);
+  $('sms-go').onclick = async () => {
+    $('sms-go').disabled = true; $('sms-go').textContent = 'Sending…';
+    let sent = 0, failed = 0, firstErr = '';
+    try{
+      const token = await window.Clerk.session.getToken();
+      for(let i=0;i<ok.length;i+=50){
+        const batch = ok.slice(i,i+50).map(r => ({ learner_id:r.id, to:r.phone, message:fillTpl(opts.tpl, r, opts) }));
+        const res = await fetch(SUPABASE_URL + '/functions/v1/send-sms', { method:'POST',
+          headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+token, 'apikey':SUPABASE_ANON_KEY },
+          body: JSON.stringify({ school_id: opts.sid, messages: batch }) });
+        const j = await res.json().catch(()=>({}));
+        if(!res.ok){ failed += batch.length; firstErr = firstErr || j.error || ('HTTP '+res.status); continue; }
+        sent += j.sent||0; failed += j.failed||0;
+        if(!firstErr) firstErr = ((j.results||[]).find(x => !x.ok)||{}).error || '';
+      }
+    }catch(e){ failed = ok.length - sent; firstErr = e.message || String(e); }
+    closeModal();
+    toast(`SMS sent: ${sent} · failed: ${failed}` + (failed && firstErr ? ' — ' + firstErr : ''), failed ? 'warn' : 'success');
+  };
+}
+
+/* ---------- Finance access (Platform Owner only) ---------- */
+async function loadAccess(){
+  const rows = await sbOk(dbHandle.from('finance_school_access').select('school_id,enabled,enabled_at,note'));
+  ACCESS = {};
+  (rows||[]).forEach(r => ACCESS[r.school_id] = r);
+}
+async function pageAccess(){
+  if(!isOwner()){
+    return `<div class="pagehead"><div><h1>Finance Access</h1></div></div>
+      <div class="warn-box">Only the Platform Owner can activate or deactivate Finance for a school.</div>`;
+  }
+  try{ await loadAccess(); }
+  catch(e){ return `<div class="pagehead"><div><h1>Finance Access</h1></div></div><div class="warn-box">${esc(e.message||e)}<br>Run 02_finance_access.sql in Supabase first.</div>`; }
+  const schools = DATA.schools.slice().sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')));
+  return `<div class="pagehead"><div><h1>Finance Access</h1>
+      <div class="sub">Schools without access use Analytics only. Only the Platform Owner can change this.</div></div></div>
+    <div class="panel" style="overflow-x:auto;">
+      <table class="data"><thead><tr><th>School</th><th>Finance</th><th>Activated</th><th></th></tr></thead>
+      <tbody>${schools.map(s => {
+        const on = financeEnabled(s.id);
+        const at = ACCESS[s.id]?.enabled_at ? String(ACCESS[s.id].enabled_at).slice(0,10) : '—';
+        return `<tr><td><strong>${esc(s.name||s.id)}</strong></td>
+          <td>${on ? '<span class="badge good">Enabled</span>' : '<span class="badge low">Not enabled</span>'}</td>
+          <td>${on ? esc(at) : '—'}</td>
+          <td>${on
+            ? `<button class="btn sm danger" data-access="${esc(s.id)}" data-enable="0">Disable</button>`
+            : `<button class="btn sm primary" data-access="${esc(s.id)}" data-enable="1">Enable</button>`}</td></tr>`;
+      }).join('') || '<tr><td colspan="4" class="small">No schools found.</td></tr>'}</tbody></table>
+    </div>`;
+}
+async function toggleAccess(sid, enable){
+  const name = schoolById(sid)?.name || sid;
+  if(!enable && !confirm(`Disable Finance for ${name}? Its admins and teachers will lose access immediately. Existing records are kept.`)) return;
+  try{
+    await sbOk(dbHandle.rpc('finance_set_school_access', { p_school_id: sid, p_enabled: enable, p_note: null }));
+    await loadAccess();
+    if(FILTERS.schoolId && !financeEnabled(FILTERS.schoolId)) FILTERS.schoolId = '';
+    renderNav();
+    toast(`Finance ${enable ? 'enabled' : 'disabled'} for ${name}`, 'success');
+    render();
+  }catch(e){ toast(e.message || 'Failed', 'error'); }
+}
+
+/* ---------- Render router ---------- */
+async function render(){
+  const main = $('main');
+  main.innerHTML = `<div class="panel" style="text-align:center;padding:40px;"><div class="small">Loading…</div></div>`;
+  let html = '';
+  try{
+    if(STATE.page==='dashboard') html = await pageDashboard();
+    else if(STATE.page==='school-fees') html = await pageSchoolFees();
+    else if(STATE.page==='remedial') html = await pageRemedial();
+    else if(STATE.page==='learner') html = await pageLearner();
+    else if(STATE.page==='reports') html = await pageReports();
+    else if(STATE.page==='report-forms') html = await pageReportForms();
+    else if(STATE.page==='access') html = await pageAccess();
+    else html = await pageDashboard();
+  }catch(e){
+    console.error(e);
+    html = `<div class="warn-box">Error: ${esc(e.message||e)}</div>`;
+  }
+  main.innerHTML = html;
+  bindFilters();
+  bindPageActions();
+  const sch = FILTERS.schoolId ? schoolById(FILTERS.schoolId) : null;
+  $('sb-school').textContent = sch ? sch.name : (accessibleSchools()[0]?.name || '—');
+}
+
+function bindPageActions(){
+  document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => goto(b.dataset.goto));
+  const sfSearch = $('sf-search');
+  if(sfSearch) sfSearch.onkeydown = e => { if(e.key==='Enter'){ STATE.params.q = sfSearch.value; render(); } };
+  const lrSearch = $('lr-search');
+  if(lrSearch) lrSearch.onkeydown = e => { if(e.key==='Enter'){ STATE.params.q = lrSearch.value; render(); } };
+
+  $('sf-set-fees')?.addEventListener('click', () => modalSetFees('school'));
+  $('sf-record-pay')?.addEventListener('click', modalRecordPayment);
+  $('sf-adjust')?.addEventListener('click', () => modalAdjustment('school'));
+  $('rm-submit')?.addEventListener('click', modalSubmitRemedial);
+  $('rm-set-fees')?.addEventListener('click', () => modalSetFees('remedial'));
+
+  document.querySelectorAll('[data-approve]').forEach(b => b.onclick = () => reviewSubmission(b.dataset.approve, 'approve'));
+  document.querySelectorAll('[data-reject]').forEach(b => b.onclick = () => reviewSubmission(b.dataset.reject, 'reject'));
+  $('rf-build')?.addEventListener('click', buildReportForms);
+  document.querySelectorAll('[data-access]').forEach(b => b.onclick = () => toggleAccess(b.dataset.access, b.dataset.enable === '1'));
+  document.querySelectorAll('[data-learner]').forEach(b => b.onclick = () => showLearnerRecord(b.dataset.learner));
+  document.querySelectorAll('[data-learner-rem]').forEach(b => b.onclick = () => showLearnerRecord(b.dataset.learnerRem));
+  document.querySelectorAll('[data-open-learner]').forEach(b => b.onclick = () => showLearnerRecord(b.dataset.openLearner));
+
+  $('rpt-collection')?.addEventListener('click', async () => {
+    const out = $('report-out');
+    out.innerHTML = '<div class="panel"><p class="small">Building report…</p></div>';
+    const opts = { schoolId: FILTERS.schoolId, classId: FILTERS.classId||undefined, year: FILTERS.year||undefined, term: FILTERS.term||undefined, feeType:'school' };
+    try{
+      const pays = await fetchPayments(opts);
+      const total = pays.reduce((n,p)=>n+Number(p.amount),0);
+      const csvRows = pays.map(p => {
+        const l = studentById(p.learner_id);
+        return { Date: p.payment_date, Learner: l?.name||p.learner_id, Class: classById(p.class_id)?.name||'', Amount: p.amount, Method: p.method||'', Reference: p.reference||'' };
+      });
+      out.innerHTML = `<div class="panel">
+        <div class="panel-title"><h2>School fees collection</h2>
+          <div class="actions"><button class="btn sm" onclick="window.print()">Print</button>
+          <button class="btn sm" id="csv-collection">Export CSV</button></div></div>
+        <p>Total collected: <strong>${money(total)}</strong> · ${pays.length} payment(s)</p>
+        <table class="data"><thead><tr><th>Date</th><th>Learner</th><th>Class</th><th class="num">Amount</th><th>Method</th><th>Ref</th></tr></thead>
+        <tbody>${pays.map(p=>{
+          const l=studentById(p.learner_id);
+          return `<tr><td>${esc(p.payment_date)}</td><td>${esc(l?.name||p.learner_id)}</td><td>${esc(classById(p.class_id)?.name||'')}</td>
+            <td class="num">${money(p.amount)}</td><td>${esc(p.method||'')}</td><td>${esc(p.reference||'')}</td></tr>`;
+        }).join('')||'<tr><td colspan="6" class="small">No payments.</td></tr>'}</tbody></table></div>`;
+      $('csv-collection')?.addEventListener('click', () => downloadCsv('school-fees-collection.csv', csvRows));
+    }catch(e){ out.innerHTML = `<div class="warn-box">${esc(e.message)}</div>`; }
+  });
+  $('rpt-outstanding')?.addEventListener('click', async () => {
+    const out = $('report-out');
+    const learners = accessibleStudents(FILTERS.schoolId, FILTERS.classId||undefined);
+    const opts = { schoolId: FILTERS.schoolId, classId: FILTERS.classId||undefined, year: FILTERS.year||undefined, term: FILTERS.term||undefined, feeType:'school' };
+    try{
+      const [ch, pay, adj] = await Promise.all([fetchCharges(opts), fetchPayments(opts), fetchAdjustments(opts)]);
+      const bal = computeBalances(learners, ch, pay, adj);
+      const byClass = {};
+      Object.values(bal).forEach(r => {
+        const cid = r.learner.classId;
+        if(!byClass[cid]) byClass[cid] = { charged:0, paid:0, out:0, n:0, fully:0, partial:0, unpaid:0, credit:0 };
+        byClass[cid].charged += r.schoolCharged + r.schoolAdj;
+        byClass[cid].paid += r.schoolPaid;
+        byClass[cid].out += r.schoolOutstanding;
+        byClass[cid].n++;
+        if(r.schoolStatus==='Fully Paid') byClass[cid].fully++;
+        else if(r.schoolStatus==='Partially Paid') byClass[cid].partial++;
+        else if(r.schoolStatus==='Credit') byClass[cid].credit++;
+        else byClass[cid].unpaid++;
+      });
+      const csvRows = Object.keys(byClass).map(cid => {
+        const c = byClass[cid];
+        return { Class: classById(cid)?.name||cid, Learners: c.n, Charged: c.charged, Paid: c.paid, Outstanding: c.out, FullyPaid: c.fully, PartiallyPaid: c.partial, Unpaid: c.unpaid, Credit: c.credit };
+      });
+      out.innerHTML = `<div class="panel">
+        <div class="panel-title"><h2>School fees by class</h2>
+          <div class="actions"><button class="btn sm" onclick="window.print()">Print</button>
+          <button class="btn sm" id="csv-sf-class">Export CSV</button></div></div>
+        <table class="data"><thead><tr><th>Class</th><th class="num">Learners</th><th class="num">Charged</th><th class="num">Paid</th><th class="num">Outstanding</th><th class="num">Fully</th><th class="num">Partial</th><th class="num">Unpaid</th></tr></thead>
+        <tbody>${Object.keys(byClass).map(cid => {
+          const c = byClass[cid];
+          return `<tr><td>${esc(classById(cid)?.name||cid)}</td><td class="num">${c.n}</td><td class="num">${money(c.charged)}</td><td class="num">${money(c.paid)}</td><td class="num">${money(c.out)}</td><td class="num">${c.fully}</td><td class="num">${c.partial}</td><td class="num">${c.unpaid}</td></tr>`;
+        }).join('')||'<tr><td colspan="8" class="small">No data.</td></tr>'}</tbody></table></div>`;
+      $('csv-sf-class')?.addEventListener('click', () => downloadCsv('school-fees-by-class.csv', csvRows));
+    }catch(e){ out.innerHTML = `<div class="warn-box">${esc(e.message)}</div>`; }
+  });
+  $('rpt-remedial-class')?.addEventListener('click', async () => {
+    const out = $('report-out');
+    out.innerHTML = '<div class="panel"><p class="small">Building report…</p></div>';
+    const learners = accessibleStudents(FILTERS.schoolId, FILTERS.classId||undefined);
+    const opts = { schoolId: FILTERS.schoolId, classId: FILTERS.classId||undefined, year: FILTERS.year||undefined, term: FILTERS.term||undefined, feeType:'remedial' };
+    try{
+      const [ch, pay, adj, pending] = await Promise.all([
+        fetchCharges(opts), fetchPayments(opts), fetchAdjustments(opts),
+        fetchSubmissions({ schoolId: FILTERS.schoolId, classId: FILTERS.classId||undefined, status:'pending', year: FILTERS.year||undefined, term: FILTERS.term||undefined })
+      ]);
+      const bal = computeBalances(learners, ch, pay, adj);
+      const byClass = {};
+      Object.values(bal).forEach(r => {
+        const cid = r.learner.classId;
+        if(!byClass[cid]) byClass[cid] = { charged:0, paid:0, out:0, n:0, pending:0 };
+        byClass[cid].charged += r.remedialCharged + r.remedialAdj;
+        byClass[cid].paid += r.remedialPaid;
+        byClass[cid].out += r.remedialOutstanding;
+        byClass[cid].n++;
+      });
+      (pending||[]).forEach(p => { if(byClass[p.class_id]) byClass[p.class_id].pending++; });
+      (pending||[]).forEach(s => {
+        if(!byClass[s.class_id]) byClass[s.class_id] = { charged:0, paid:0, out:0, n:0, pending:0 };
+        byClass[s.class_id].pending++;
+      });
+      const csvRows = Object.keys(byClass).map(cid => {
+        const c = byClass[cid];
+        return { Class: classById(cid)?.name||cid, Learners: c.n, Charged: c.charged, ApprovedPaid: c.paid, Outstanding: c.out, PendingSubmissions: c.pending };
+      });
+      out.innerHTML = `<div class="panel">
+        <div class="panel-title"><h2>Remedial fees by class</h2>
+          <div class="actions"><button class="btn sm" onclick="window.print()">Print</button>
+          <button class="btn sm" id="csv-rem-class">Export CSV</button></div></div>
+        <table class="data"><thead><tr><th>Class</th><th class="num">Learners</th><th class="num">Charged</th><th class="num">Approved paid</th><th class="num">Outstanding</th><th class="num">Pending</th></tr></thead>
+        <tbody>${Object.keys(byClass).map(cid => {
+          const c = byClass[cid];
+          return `<tr><td>${esc(classById(cid)?.name||cid)}</td><td class="num">${c.n}</td><td class="num">${money(c.charged)}</td><td class="num">${money(c.paid)}</td><td class="num">${money(c.out)}</td><td class="num">${c.pending}</td></tr>`;
+        }).join('')||'<tr><td colspan="6" class="small">No data.</td></tr>'}</tbody></table></div>`;
+      $('csv-rem-class')?.addEventListener('click', () => downloadCsv('remedial-by-class.csv', csvRows));
+    }catch(e){ out.innerHTML = `<div class="warn-box">${esc(e.message)}</div>`; }
+  });
+  $('rpt-pending')?.addEventListener('click', async () => {
+    const out = $('report-out');
+    out.innerHTML = '<div class="panel"><p class="small">Loading…</p></div>';
+    try{
+      const subs = await fetchSubmissions({ schoolId: FILTERS.schoolId||undefined, classId: FILTERS.classId||undefined, status:'pending', year: FILTERS.year||undefined, term: FILTERS.term||undefined });
+      const csvRows = (subs||[]).map(s => {
+        const l = studentById(s.learner_id);
+        return { Learner: l?.name||s.learner_id, Class: classById(s.class_id)?.name||'', Amount: s.amount, Date: s.payment_date, Method: s.method||'', Reference: s.reference||'', SubmittedBy: s.submitted_by };
+      });
+      out.innerHTML = `<div class="panel">
+        <div class="panel-title"><h2>Pending remedial submissions</h2>
+          <div class="actions"><button class="btn sm" onclick="window.print()">Print</button>
+          <button class="btn sm" id="csv-pending">Export CSV</button></div></div>
+        <table class="data"><thead><tr><th>Learner</th><th>Class</th><th class="num">Amount</th><th>Date</th><th>Method</th><th>Ref</th><th>Submitted by</th></tr></thead>
+        <tbody>${(subs||[]).map(s=>{
+          const l=studentById(s.learner_id);
+          return `<tr><td>${esc(l?.name||s.learner_id)}</td><td>${esc(classById(s.class_id)?.name||'')}</td><td class="num">${money(s.amount)}</td>
+            <td>${esc(s.payment_date)}</td><td>${esc(s.method||'')}</td><td>${esc(s.reference||'')}</td><td class="small">${esc(s.submitted_by)}</td></tr>`;
+        }).join('')||'<tr><td colspan="7" class="small">No pending submissions.</td></tr>'}</tbody></table></div>`;
+      $('csv-pending')?.addEventListener('click', () => downloadCsv('pending-remedial.csv', csvRows));
+    }catch(e){ out.innerHTML = `<div class="warn-box">${esc(e.message)}</div>`; }
+  });
+  $('rpt-statement')?.addEventListener('click', () => {
+    const learners = accessibleStudents(FILTERS.schoolId, FILTERS.classId||undefined);
+    if(!learners.length) return toast('No learners','error');
+    const id = prompt('Enter learner ID or name (partial):');
+    if(!id) return;
+    const l = learners.find(x => x.id===id || (x.name||'').toLowerCase().includes(id.toLowerCase()));
+    if(!l) return toast('Learner not found','error');
+    showLearnerRecord(l.id);
+  });
+}
+
+/* ---------- Auth (same Clerk account as Analytics) ---------- */
+/* TODO before go-live: replace with your pk_live_ key (same one Analytics uses). */
+const CLERK_PUBLISHABLE_KEY = 'pk_test_aGFybWxlc3MtbW9sZS0zMjgzLmNsZXJrLmFjY291bnRzLmRldiQ';
+
+let clerkPromise = null;
+function loadClerk(){
+  if(clerkPromise) return clerkPromise;
+  clerkPromise = new Promise((resolve, reject) => {
+    if(window.Clerk){
+      window.Clerk.load().then(() => resolve(window.Clerk)).catch(reject);
+      return;
+    }
+    let host = '';
+    try{ host = atob(CLERK_PUBLISHABLE_KEY.split('_')[2]).replace(/\$$/,''); }catch(e){}
+    if(!host || /REPLACE/.test(CLERK_PUBLISHABLE_KEY)){
+      return reject(new Error('Sign-in is not configured. The Clerk publishable key is missing.'));
+    }
+    const s = document.createElement('script');
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.setAttribute('data-clerk-publishable-key', CLERK_PUBLISHABLE_KEY);
+    s.src = 'https://' + host + '/npm/@clerk/clerk-js@5/dist/clerk.browser.js';
+    s.onload = async () => {
+      try{ await window.Clerk.load(); resolve(window.Clerk); }
+      catch(e){ reject(e); }
+    };
+    s.onerror = () => reject(new Error('Cannot reach the sign-in service. Check your internet connection.'));
+    document.head.appendChild(s);
+  });
+  clerkPromise.catch(() => { clerkPromise = null; });
+  return clerkPromise;
+}
+
+function showLoginError(msg){
+  const el = $('login-error');
+  if(!el) return;
+  if(!msg){ el.classList.remove('show'); el.textContent = ''; return; }
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+async function afterSignIn(user){
+  CURRENT_USER = {
+    id: user.id,
+    email: (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress)
+        || (user.emailAddresses && user.emailAddresses[0] && user.emailAddresses[0].emailAddress)
+        || '',
+    name: user.fullName || user.firstName || user.username || 'User'
+  };
+  dbHandle = openDB();
+  try{
+    await loadMemberships(CURRENT_USER.id);
+    await loadSchoolsAndLearners();
+    await loadAccess().catch(e => { console.warn('finance_school_access', e); ACCESS = {}; });
+    DATA_LOADED = true;
+  }catch(e){
+    console.error(e);
+    showLoginError('Signed in, but school data could not be loaded: ' + (e.message || e));
+    return;
+  }
+  $('login-gate').classList.add('hidden');
+  $('shell').classList.remove('locked');
+  renderUserChip();
+  renderNav();
+  goto('dashboard');
+}
+
+async function signOut(){
+  try{
+    const Cl = await loadClerk();
+    if(Cl) await Cl.signOut();
+  }catch(e){}
+  CURRENT_USER = null;
+  DATA_LOADED = false;
+  DATA = { schools:[], classes:[], students:[], streams:[] };
+  MY_SCHOOL_ROLE = {};
+  MY_CLASS_ROLE = {};
+  $('shell').classList.add('locked');
+  $('login-gate').classList.remove('hidden');
+  location.reload();
+}
+
+async function doPasswordSignIn(email, password){
+  const Cl = await loadClerk();
+  if(Cl.session) await Cl.signOut();
+  const result = await Cl.client.signIn.create({
+    identifier: email,
+    password: password
+  });
+  if(result.status === 'complete'){
+    await Cl.setActive({ session: result.createdSessionId });
+    return { ok: true, user: Cl.user };
+  }
+  /* Handle extra steps (e.g. 2FA) if configured later */
+  if(result.status === 'needs_second_factor'){
+    return { ok: false, msg: 'Two-factor authentication is required. Complete it in Analytics first, then open Finance.' };
+  }
+  return { ok: false, msg: 'Sign-in could not be completed. Check your email and password.' };
+}
+
+function friendlyAuthError(err){
+  const code = (err && err.errors && err.errors[0] && err.errors[0].code) || '';
+  const msg = (err && err.errors && err.errors[0] && (err.errors[0].longMessage || err.errors[0].message))
+           || (err && err.message) || '';
+  if(code === 'form_identifier_not_found' || code === 'form_password_incorrect')
+    return 'Incorrect email or password.';
+  if(code === 'too_many_requests' || (err && err.status === 429))
+    return 'Too many attempts. Please wait a minute and try again.';
+  if(code === 'session_exists')
+    return 'You already have an active session. Refresh the page.';
+  return msg || 'Sign-in failed. Please try again.';
+}
+
+async function onLoginSubmit(e){
+  e.preventDefault();
+  showLoginError('');
+  const email = ($('login-user').value || '').trim().toLowerCase();
+  const password = $('login-pass').value || '';
+  if(!email || !password){
+    showLoginError('Enter your email and password.');
+    return;
+  }
+  const btn = $('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  try{
+    const r = await doPasswordSignIn(email, password);
+    if(!r.ok){
+      showLoginError(r.msg || 'Sign-in failed.');
+      return;
+    }
+    await afterSignIn(r.user || (await loadClerk()).user);
+  }catch(err){
+    console.error(err);
+    showLoginError(friendlyAuthError(err));
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  }
+}
+
+async function initAuth(){
+  try{
+    const Cl = await loadClerk();
+    /* Already signed in (same browser session as Analytics) → enter Finance immediately */
+    if(Cl.user && Cl.session){
+      await afterSignIn(Cl.user);
+      return;
+    }
+  }catch(e){
+    console.warn('Clerk load', e);
+    showLoginError(e.message || 'Could not load sign-in service.');
+  }
+  /* Show email/password form (same credentials as Analytics) */
+  const form = $('login-form');
+  if(form) form.addEventListener('submit', onLoginSubmit);
+}
+
+/* Sidebar mobile */
+document.addEventListener('click', e => {
+  if(e.target.closest('#sb-toggle')){
+    $('sidebar').classList.toggle('open');
+    $('sidebar-backdrop').classList.toggle('show');
+  }
+  if(e.target.id === 'sidebar-backdrop'){
+    $('sidebar').classList.remove('open');
+    $('sidebar-backdrop').classList.remove('show');
+  }
+});
+
+/* Boot */
+document.addEventListener('DOMContentLoaded', () => {
+  ['link-analytics','back-analytics'].forEach(id => { const a = $(id); if(a) a.href = ANALYTICS_URL; });
+  initAuth();
+});
+</script>
+</body>
+</html>
